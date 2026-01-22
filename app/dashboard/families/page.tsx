@@ -102,7 +102,7 @@ export default function FamiliesPage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {filteredParents.map((parent) => {
-            const studentNames = getStudentNames(parent.student_ids)
+            const studentNames = getStudentNames(parent.student_ids) 
             return (
               <Link key={parent.id} href={`/dashboard/families/${parent.id}`}>
                 <Card className="border-amber-200 hover:border-amber-400 transition-colors cursor-pointer h-full">
