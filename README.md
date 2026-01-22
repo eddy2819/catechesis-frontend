@@ -8,14 +8,14 @@ Este proyecto consume una API REST desarrollada en FastAPI y está diseñado par
 
 ## 🖥️ Tecnologías utilizadas
 
-- **Next.js 14** (App Router)
-- **React 18**
-- **TypeScript**
-- **Tailwind CSS**
-- **ShadCN/UI**
-- **Fetch API**
-- **JWT Authentication**
-- **Git & GitHub**
+- ⚡ **Next.js 14** (App Router)
+- ⚛️ **React 18**
+- 🟦 **TypeScript**
+- 🎨 **Tailwind CSS**
+- 🧩 **ShadCN/UI**
+- 🌐 **Fetch API**
+- 🔐 **JWT Authentication**
+- 🧑‍💻 **Git & GitHub**
 
 ---
 
