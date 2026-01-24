@@ -31,6 +31,7 @@ export default function NewStudentPage() {
     first_communion_date: "",
     confirmation_date: "",
     allergies: "",
+    address: "",
     medical_conditions: "",
     status: "active" as "active" | "inactive",
   })
@@ -191,6 +192,18 @@ export default function NewStudentPage() {
                         <SelectItem value="Confirmación 3">Confirmación 3</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="address" className="text-amber-900">
+                      Dirección *
+                    </Label>
+                    <Input
+                      id="address"
+                      required
+                      value={formData.address}
+                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      className="border-amber-200 focus:border-amber-600"
+                    />
                   </div>
                 </div>
               </CardContent>

@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { exportStudentsToPDF } from "@/lib/pdf-export"
 import { listStudents } from "@/lib/students"
 import type { Student } from "@/lib/types"
-import { Plus, Search, UserCircle } from "lucide-react"
+import { FileDown, Plus, Search, UserCircle } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -52,12 +53,23 @@ export default function StudentsPage() {
           <h1 className="text-3xl font-bold text-amber-900 mb-2">Estudiantes</h1>
           <p className="text-amber-700">Gestiona la información de los estudiantes</p>
         </div>
-        <Link href="/dashboard/students/new">
-          <Button className="bg-amber-600 hover:bg-amber-700 text-white">
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Estudiante
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => exportStudentsToPDF(filteredStudents)}
+            className="border-amber-600 text-amber-600 hover:bg-amber-50"
+            disabled={filteredStudents.length === 0}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Exportar PDF
           </Button>
-        </Link>
+          <Link href="/dashboard/students/new">
+            <Button className="bg-amber-600 hover:bg-amber-700 text-white">
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Estudiante
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Card className="border-amber-200 mb-6">

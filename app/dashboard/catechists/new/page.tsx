@@ -22,6 +22,7 @@ export default function NewCatechistPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    ci: "",
     email: "",
     phone: "",
     role: "catequista" as Catechist["role"],
@@ -29,7 +30,7 @@ export default function NewCatechistPage() {
     schedule: "",
     address: "",
     dateBri:"",
-    neighborhood: "",
+    service_years: "",
     emergencyContact: "",
     emergencyPhone: "",
     notes: "",
@@ -93,6 +94,17 @@ export default function NewCatechistPage() {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="ci">Cedula *</Label>
+                <Input
+                  id="ci"
+                  type="text"
+                  required
+                  value={formData.ci}
+                  onChange={(e) => setFormData({ ...formData, ci: e.target.value })}
+                  className="border-amber-200 focus:border-amber-400"
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
@@ -113,7 +125,7 @@ export default function NewCatechistPage() {
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2 ">
                 <Label htmlFor="date">Fecha Nacimiento</Label>
                 <Input
                   id="date"
@@ -123,7 +135,7 @@ export default function NewCatechistPage() {
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2 ">
                 <Label htmlFor="address">Dirección</Label>
                 <Input
                   id="address"
@@ -133,13 +145,13 @@ export default function NewCatechistPage() {
                 />
               </div>
 
-              <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="neighborhood">Barrio</Label>
+              <div className="space-y-2">
+                <Label htmlFor="neighborhood">Años de servicio</Label>
                 <Input
                   id="neighborhood"
-                  placeholder="Ej: Centro, La Floresta, San Blas"
-                  value={formData.neighborhood}
-                  onChange={(e) => setFormData({ ...formData, neighborhood: e.target.value })}
+                  type="number"
+                  value={formData.service_years}
+                  onChange={(e) => setFormData({ ...formData, service_years: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>

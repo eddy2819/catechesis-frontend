@@ -16,6 +16,7 @@ export interface Student {
   last_name: string;
   birth_date: Date;
   grade: string;
+  address?: string;
   sacrament: {
     baptism_date?: Date;
     first_communion_date?: Date;
@@ -113,6 +114,7 @@ export interface Catechist {
   firstName: string;
   lastName: string;
   email: string;
+  ci: string;
   phone: string;
   role: "coordinador" | "catequista" | "secretario" | "auxiliar";
   specialization?: string;
@@ -121,7 +123,7 @@ export interface Catechist {
   joinedDate: Date;
   address?: string;
   dateBri?: string;
-  neighborhood?: string;
+  service_years?: string;
   emergencyContact?: string;
   emergencyPhone?: string;
   notes?: string;
