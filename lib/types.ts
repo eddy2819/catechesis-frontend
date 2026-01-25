@@ -111,18 +111,18 @@ export interface Communication {
 
 export interface Catechist {
   id: string;
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   email: string;
   ci: string;
-  phone: string;
+  phone_number: string;
   role: "coordinador" | "catequista" | "secretario" | "auxiliar";
   specialization?: string;
-  schedule?: string;
-  status: "active" | "inactive";
+  scheduled?: string;
+  status: "activo" | "inactivo" | "retirado";
   joinedDate: Date;
   address?: string;
-  dateBri?: string;
+  date_of_birth?: string;
   service_years?: string;
   emergencyContact?: string;
   emergencyPhone?: string;

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { dataStore } from "@/lib/store"
+import { createCatechist } from "@/lib/catechists"
 import type { Catechist } from "@/lib/types"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
@@ -20,32 +20,30 @@ export default function NewCatechistPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     ci: "",
+    date_of_birth: "",
     email: "",
-    phone: "",
+    phone_number: "",
     role: "catequista" as Catechist["role"],
     specialization: "",
-    schedule: "",
-    address: "",
-    dateBri:"",
+    scheduled: "",
+    status: "activo" as Catechist["status"],
     service_years: "",
-    emergencyContact: "",
-    emergencyPhone: "",
+    joined_date: new Date().toISOString().split("T")[0],
+    address: "",
     notes: "",
-    status: "active" as Catechist["status"],
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  
+
+  const handleSubmit =async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-
+    console.log("Submitting form data:", formData)
     try {
-      dataStore.addCatechist({
-        ...formData,
-        joinedDate: new Date(),
-      })
+      await createCatechist(formData)
       router.push("/dashboard/catechists")
     } catch (error) {
       console.error("Error adding catechist:", error)
@@ -78,8 +76,8 @@ export default function NewCatechistPage() {
                 <Input
                   id="firstName"
                   required
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  value={formData.first_name}
+                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
@@ -88,17 +86,16 @@ export default function NewCatechistPage() {
                 <Input
                   id="lastName"
                   required
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="ci">Cedula *</Label>
+                <Label htmlFor="ci">Cedula </Label>
                 <Input
                   id="ci"
                   type="text"
-                  required
                   value={formData.ci}
                   onChange={(e) => setFormData({ ...formData, ci: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
@@ -120,8 +117,8 @@ export default function NewCatechistPage() {
                 <Input
                   id="phone"
                   required
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  value={formData.phone_number}
+                  onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
@@ -130,8 +127,8 @@ export default function NewCatechistPage() {
                 <Input
                   id="date"
                   type="date"
-                  value={formData.dateBri}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  value={formData.date_of_birth}
+                  onChange={(e) => setFormData({ ...formData, date_of_birth: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
@@ -149,7 +146,7 @@ export default function NewCatechistPage() {
                 <Label htmlFor="neighborhood">Años de servicio</Label>
                 <Input
                   id="neighborhood"
-                  type="number"
+                  type="text"
                   value={formData.service_years}
                   onChange={(e) => setFormData({ ...formData, service_years: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
@@ -189,8 +186,8 @@ export default function NewCatechistPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="active">Activo</SelectItem>
-                    <SelectItem value="inactive">Inactivo</SelectItem>
+                    <SelectItem value="activo">Activo</SelectItem>
+                    <SelectItem value="inactivo">Inactivo</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -209,39 +206,13 @@ export default function NewCatechistPage() {
                 <Input
                   id="schedule"
                   placeholder="Ej: Sábados 10:00-12:00"
-                  value={formData.schedule}
-                  onChange={(e) => setFormData({ ...formData, schedule: e.target.value })}
+                  value={formData.scheduled}
+                  onChange={(e) => setFormData({ ...formData, scheduled: e.target.value })}
                   className="border-amber-200 focus:border-amber-400"
                 />
               </div>
             </div>
           </Card>
-
-          {/* Emergency Contact */}
-          <Card className="p-6">
-            <h2 className="text-lg font-semibold text-amber-900 mb-4">Contacto de Emergencia</h2>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="emergencyContact">Nombre del Contacto</Label>
-                <Input
-                  id="emergencyContact"
-                  value={formData.emergencyContact}
-                  onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
-                  className="border-amber-200 focus:border-amber-400"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="emergencyPhone">Teléfono de Emergencia</Label>
-                <Input
-                  id="emergencyPhone"
-                  value={formData.emergencyPhone}
-                  onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
-                  className="border-amber-200 focus:border-amber-400"
-                />
-              </div>
-            </div>
-          </Card>
-
           {/* Additional Notes */}
           <Card className="p-6">
             <h2 className="text-lg font-semibold text-amber-900 mb-4">Notas Adicionales</h2>

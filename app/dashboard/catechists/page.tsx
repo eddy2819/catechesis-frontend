@@ -1,13 +1,5 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Plus, Search, Edit, Trash2, Mail, Phone, UserCog } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,8 +10,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { dataStore } from "@/lib/store"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { deleteCatechist, listCatechists } from "@/lib/catechists"
 import type { Catechist } from "@/lib/types"
+import { Edit, Mail, Phone, Plus, Search, Trash2, UserCog } from "lucide-react"
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 const roleLabels: Record<Catechist["role"], string> = {
   coordinador: "Coordinador",
@@ -39,34 +39,49 @@ export default function CatechistsPage() {
   const [catechists, setCatechists] = useState<Catechist[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const safe = (value?: string) => value?.toLowerCase() ?? ""
+
 
   useEffect(() => {
-    loadCatechists()
+    const fetchCatechists = async () => {
+      try{
+        const data = await listCatechists() as Catechist[]
+        setCatechists(data)
+      } catch (error) {
+        console.error("Error fetching catechists:", error)
+      }
+    }
+    fetchCatechists()
   }, [])
 
-  const loadCatechists = () => {
-    const data = dataStore.getCatechists()
-    setCatechists(data)
-  }
+  
 
-  const handleDelete = (id: string) => {
-    dataStore.deleteCatechist(id)
-    loadCatechists()
+  const handleDelete = async (id: string) => {
+    console.log("Catechist completo:", catechists.find(c => c.id === id))
+
+    console.log("ID que voy a borrar:", id)
+    try {
+      await deleteCatechist(id)
+      setCatechists(catechists.filter((c) => c.id !== id))
+      
+    } catch (error) {
+      console.error("Error deleting catechist:", error)
+    }
     setDeleteId(null)
   }
 
   const filteredCatechists = catechists.filter((catechist) => {
     const searchLower = searchQuery.toLowerCase()
     return (
-      catechist.firstName.toLowerCase().includes(searchLower) ||
-      catechist.lastName.toLowerCase().includes(searchLower) ||
-      catechist.email.toLowerCase().includes(searchLower) ||
-      roleLabels[catechist.role].toLowerCase().includes(searchLower)
+      safe(catechist.first_name).includes(searchLower) ||
+    safe(catechist.last_name).includes(searchLower) ||
+    safe(catechist.email).includes(searchLower) ||
+    safe(roleLabels[catechist.role]).includes(searchLower)
     )
   })
 
-  const activeCatechists = filteredCatechists.filter((c) => c.status === "active")
-  const inactiveCatechists = filteredCatechists.filter((c) => c.status === "inactive")
+  const activeCatechists = filteredCatechists.filter((c) => c.status === "activo")
+  const inactiveCatechists = filteredCatechists.filter((c) => c.status === "inactivo")
 
   // Count by role
   const roleCount = {
@@ -158,7 +173,7 @@ export default function CatechistsPage() {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Rol</TableHead>
-              <TableHead>Email</TableHead>
+              <TableHead>Años de Servicio</TableHead>
               <TableHead>Teléfono</TableHead>
               <TableHead>Especialización</TableHead>
               <TableHead>Acciones</TableHead>
@@ -175,23 +190,24 @@ export default function CatechistsPage() {
               activeCatechists.map((catechist) => (
                 <TableRow key={catechist.id}>
                   <TableCell className="font-medium">
-                    {catechist.firstName} {catechist.lastName}
+                    {catechist.first_name} {catechist.last_name}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={roleColors[catechist.role]}>
+                      <UserCog className="h-3 w-3" />
                       {roleLabels[catechist.role]}
                     </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-amber-700">
                       <Mail className="h-3 w-3" />
-                      {catechist.email}
+                      {catechist.service_years}
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2 text-sm text-amber-700">
                       <Phone className="h-3 w-3" />
-                      {catechist.phone}
+                      {catechist.phone_number}
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-amber-700">{catechist.specialization || "—"}</TableCell>
@@ -240,7 +256,7 @@ export default function CatechistsPage() {
               {inactiveCatechists.map((catechist) => (
                 <TableRow key={catechist.id} className="opacity-60">
                   <TableCell className="font-medium">
-                    {catechist.firstName} {catechist.lastName}
+                    {catechist.first_name} {catechist.last_name}
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={roleColors[catechist.role]}>
@@ -248,7 +264,7 @@ export default function CatechistsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-amber-700">{catechist.email}</TableCell>
-                  <TableCell className="text-sm text-amber-700">{catechist.phone}</TableCell>
+                  <TableCell className="text-sm text-amber-700">{catechist.phone_number}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="sm" asChild>
