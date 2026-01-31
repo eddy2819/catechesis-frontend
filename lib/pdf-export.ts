@@ -10,7 +10,8 @@ export function exportStudentsToPDF(students: Student[]) {
   // Title
   doc.setFontSize(18);
   doc.setTextColor(146, 64, 14);
-  doc.text("Lista de Estudiantes", 14, 22);
+  doc.text("Lista de Estudiantes de Segundo de Confirmación", 14, 22);
+  doc.text("Barrio Naranjito", 14, 28);
 
   // Subtitle with date
   doc.setFontSize(10);
@@ -22,7 +23,7 @@ export function exportStudentsToPDF(students: Student[]) {
       day: "numeric",
     })}`,
     14,
-    30,
+    45,
   );
 
   // Table
@@ -82,6 +83,7 @@ export function exportCatechistsToPDF(catechists: Catechist[]) {
   doc.setFontSize(18);
   doc.setTextColor(146, 64, 14);
   doc.text("Lista de Catequistas", 14, 22);
+  doc.text("Parroquia Eclesiástica San Francisco de Taquil", 14, 28);
 
   // Subtitle with date
   doc.setFontSize(10);
@@ -93,14 +95,14 @@ export function exportCatechistsToPDF(catechists: Catechist[]) {
       day: "numeric",
     })}`,
     14,
-    30,
+    45,
   );
 
   // Table data
   const tableData = catechists.map((catechist, index) => [
     index + 1,
-    catechist.firstName,
-    catechist.lastName,
+    catechist.first_name,
+    catechist.last_name,
     catechist.ci || "No especificado",
     catechist.service_years || "No especificado",
   ]);

@@ -16,8 +16,9 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { deleteCatechist, listCatechists } from "@/lib/catechists"
+import { exportCatechistsToPDF } from "@/lib/pdf-export"
 import type { Catechist } from "@/lib/types"
-import { Edit, Mail, Phone, Plus, Search, Trash2, UserCog } from "lucide-react"
+import { Edit, FileDown, Mail, Phone, Plus, Search, Trash2, UserCog } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 
@@ -98,12 +99,23 @@ export default function CatechistsPage() {
           <h1 className="text-3xl font-bold text-amber-900">Catequistas</h1>
           <p className="text-amber-700 mt-1">Gestiona el equipo de catequistas y coordinadores</p>
         </div>
-        <Button asChild className="bg-amber-600 hover:bg-amber-700">
-          <Link href="/dashboard/catechists/new">
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Catequista
-          </Link>
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            onClick={() => exportCatechistsToPDF(filteredCatechists)}
+            className="border-amber-600 text-amber-600 hover:bg-amber-50"
+            disabled={filteredCatechists.length === 0}
+          >
+            <FileDown className="mr-2 h-4 w-4" />
+            Exportar PDF
+          </Button>
+          <Button asChild className="bg-amber-600 hover:bg-amber-700">
+            <Link href="/dashboard/catechists/new">
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Catequista
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Statistics Cards */}
