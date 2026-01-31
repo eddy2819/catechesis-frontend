@@ -12,6 +12,7 @@ export interface StudentPayload {
   first_name: string;
   last_name: string;
   birth_date?: string | null;
+  address?: string | null;
   grade?: string | null;
   allergies?: string | null;
   medical_conditions?: string | null;
@@ -38,7 +39,7 @@ export function createStudent(student: StudentPayload) {
 
 export function createStudentAttendance(
   student_id: string,
-  data?: Partial<Attendance>
+  data?: Partial<Attendance>,
 ) {
   return apiFetch(`/students/attendance?student_id=${student_id}`, {
     method: "POST",
@@ -67,7 +68,7 @@ export function updateStudent(student_id: string, data: StudentPayload) {
 
 export function updateAttendance(
   attendance_id: string,
-  data: Partial<Attendance>
+  data: Partial<Attendance>,
 ) {
   return apiFetch(`/attendance/${attendance_id}`, {
     method: "PUT",

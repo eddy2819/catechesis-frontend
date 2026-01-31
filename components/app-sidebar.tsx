@@ -5,6 +5,7 @@ import { useAuth } from "@/lib/auth-context"
 import { cn } from "@/lib/utils"
 import {
   BookOpen,
+  Building2,
   Calendar,
   CheckSquare,
   ClipboardCheck,
@@ -24,6 +25,7 @@ import { usePathname } from "next/navigation"
 const navigation = [
   { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
   { name: "Estudiantes", href: "/dashboard/students", icon: Users },
+  { name: "Gestión Parroquial", href: "/dashboard/parish-management", icon: Building2 },
   { name: "Familias", href: "/dashboard/families", icon: UsersRound },
    { name: "Catequistas", href: "/dashboard/catechists", icon: UserCog },
   { name: "Asistencias", href: "/dashboard/attendance", icon: CheckSquare },

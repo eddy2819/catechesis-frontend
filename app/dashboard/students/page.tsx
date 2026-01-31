@@ -24,7 +24,7 @@ export default function StudentsPage() {
       } catch (error) {
         console.error("Error fetching students:", error)
       }
-    }
+    } 
     fetchStudents()
   }, [])
 

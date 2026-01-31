@@ -70,6 +70,7 @@ export default function NewStudentPage() {
       first_name: formData.first_name,
       last_name: formData.last_name,
       birth_date: formData.birth_date || undefined,
+      address: formData.address || undefined,
       grade: formData.grade,
       sacrament: {
         baptism_date: formData.baptism_date || null,
@@ -187,9 +188,9 @@ export default function NewStudentPage() {
                         <SelectItem value="Preparación">Preparación</SelectItem>
                         <SelectItem value="1° Comunión">1° Comunión</SelectItem>
                         <SelectItem value="2° Comunión">2° Comunión</SelectItem>
+                        <SelectItem value="Año Biblico">Año Biblico</SelectItem>
                         <SelectItem value="Confirmación 1">Confirmación 1</SelectItem>
                         <SelectItem value="Confirmación 2">Confirmación 2</SelectItem>
-                        <SelectItem value="Confirmación 3">Confirmación 3</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
