@@ -42,7 +42,7 @@ export function AppSidebar() {
   const { user, logout } = useAuth()
 
   return (
-    <div className="flex h-full w-64 flex-col bg-amber-50 border-r border-amber-200">
+    <div className="flex h-screen w-64 flex-col bg-amber-50 border-r border-amber-200">
       <div className="flex h-16 items-center gap-3 border-b border-amber-200 px-6">
         <div className="  rounded-lg flex items-center justify-center overflow-hidden">
           <Image src="/logo-cate.jpg" alt="Logo" width={40} height={40} className="object-contain" />
@@ -53,7 +53,7 @@ export function AppSidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 space-y-1 px-3 py-4">
+      <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           return (
