@@ -215,7 +215,7 @@ export default function ParishAttendancePage() {
 
       <Card className="border-amber-200">
         <CardHeader>
-          <CardTitle className="text-amber-900">Lista de Estudiantes</CardTitle>
+          <CardTitle className="text-amber-900">Lista de Estudiante</CardTitle>
           <CardDescription className="text-amber-700">{students.length} estudiante(s) en este grupo</CardDescription>
         </CardHeader>
         <CardContent>

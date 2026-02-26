@@ -2,19 +2,20 @@
 
 import type React from "react"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
+import { useAuth } from "@/lib/auth-context"
+import { dataStore } from "@/lib/store"
+import { listStudents } from "@/lib/students"
+import type { Student } from "@/lib/types"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { dataStore } from "@/lib/store"
-import type { Student } from "@/lib/types"
-import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 
 export default function NewEvaluationPage() {
   const router = useRouter()
@@ -28,7 +29,11 @@ export default function NewEvaluationPage() {
   })
 
   useEffect(() => {
-    setStudents(dataStore.getStudents())
+    const loadStudents = async () => {
+      const studentList = await listStudents()
+      setStudents(studentList as Student[])
+    }
+    loadStudents()
   }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,7 +90,7 @@ export default function NewEvaluationPage() {
                     <SelectContent>
                       {students.map((student) => (
                         <SelectItem key={student.id} value={student.id}>
-                          {student.firstName} {student.lastName} - {student.grade}
+                          {student.first_name} {student.last_name} - {student.grade}
                         </SelectItem>
                       ))}
                     </SelectContent>

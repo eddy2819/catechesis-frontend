@@ -1,16 +1,17 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { dataStore } from "@/lib/store"
-import type { Student, Assignment, Grade } from "@/lib/types"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Trash2, Save } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import { dataStore } from "@/lib/store"
+import { listStudents } from "@/lib/students"
+import type { Assignment, Grade, Student } from "@/lib/types"
+import { Plus, Save, Trash2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export default function GradesPage() {
   const [students, setStudents] = useState<Student[]>([])
@@ -32,10 +33,15 @@ export default function GradesPage() {
     loadData()
   }, [])
 
-  const loadData = () => {
-    setStudents(dataStore.getStudents().filter((s) => s.status === "active"))
-    setAssignments(dataStore.getAssignments().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()))
-    setGrades(dataStore.getGrades())
+  const loadData = async () => {
+    try {
+      const studentsData = await listStudents()
+      setStudents(studentsData as Student[])
+      setAssignments(dataStore.getAssignments().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()))
+      setGrades(dataStore.getGrades())
+    } catch (error) {
+      console.error("Error loading data:", error)
+    }
   }
 
   const handleAddAssignment = () => {
@@ -323,7 +329,7 @@ export default function GradesPage() {
                   {students.map((student) => (
                     <tr key={student.id} className="border-b border-amber-100 hover:bg-amber-50">
                       <td className="sticky left-0 bg-white z-10 p-3 font-medium text-amber-900 border-r-2 border-amber-200">
-                        {student.firstName} {student.lastName}
+                        {student.first_name} {student.last_name}
                       </td>
                       {assignments.map((assignment) => {
                         const key = `${student.id}-${assignment.id}`

@@ -19,7 +19,7 @@ export interface StudentPayload {
   photo_url?: string | null;
   status: "active" | "inactive";
   sacrament?: SacramentPayload;
-  parents?: string; // IDs de los padres asociados
+  parent_ids?: string[]; // IDs de los padres asociados
 }
 
 export interface Attendance {
@@ -45,6 +45,10 @@ export function createStudentAttendance(
     method: "POST",
     body: JSON.stringify({ ...data }),
   });
+}
+
+export function listStudentAttendanceByDate(date: string) {
+  return apiFetch<Attendance[]>(`/students/attendance/by-date/${date}`);
 }
 
 export function listStudents() {

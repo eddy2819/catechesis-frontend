@@ -6,7 +6,7 @@ export default function DashboardPage() {
   const stats = [
     {
       title: "Estudiantes Activos",
-      value: "0",
+      value: "186",
       description: "Total de estudiantes registrados",
       icon: Users,
       color: "bg-blue-500",
