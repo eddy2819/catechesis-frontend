@@ -22,24 +22,59 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
-const navigation = [
-  { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
-  { name: "Estudiantes", href: "/dashboard/students", icon: Users },
-  { name: "Gestión Parroquial", href: "/dashboard/parish-management", icon: Building2 },
-  { name: "Familias", href: "/dashboard/families", icon: UsersRound },
-   { name: "Catequistas", href: "/dashboard/catechists", icon: UserCog },
-  { name: "Asistencias", href: "/dashboard/attendance", icon: CheckSquare },
-  { name: "Calendario", href: "/dashboard/calendar", icon: Calendar },
-  { name: "Notas", href: "/dashboard/notes", icon: FileText },
-  { name: "Calificaciones", href: "/dashboard/grades", icon: GraduationCap },
-  { name: "Evaluaciones", href: "/dashboard/evaluations", icon: ClipboardCheck },
-  { name: "Comunicaciones", href: "/dashboard/communications", icon: MessageSquare },
-  { name: "Recursos", href: "/dashboard/resources", icon: FolderOpen },
-]
+const navigationByRole = {
+  admin: [
+    { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
+    { name: "Grupos", href: "/dashboard/grupos", icon: Building2 },
+    { name: "Estudiantes", href: "/dashboard/students", icon: Users },
+    { name: "Gestión Parroquial", href: "/dashboard/parish-management", icon: Building2 },
+    { name: "Familias", href: "/dashboard/families", icon: UsersRound },
+    { name: "Catequistas", href: "/dashboard/catechists", icon: UserCog },
+    { name: "Asistencias", href: "/dashboard/attendance", icon: CheckSquare },
+    { name: "Calendario", href: "/dashboard/calendar", icon: Calendar },
+    { name: "Notas", href: "/dashboard/notes", icon: FileText },
+    { name: "Calificaciones", href: "/dashboard/grades", icon: GraduationCap },
+    { name: "Evaluaciones", href: "/dashboard/evaluations", icon: ClipboardCheck },
+    { name: "Comunicaciones", href: "/dashboard/communications", icon: MessageSquare },
+    { name: "Recursos", href: "/dashboard/resources", icon: FolderOpen },
+  ],
+
+  catequista: [
+    { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
+    { name: "Mis Grupos", href: "/dashboard/my-groups", icon: Building2 },
+    { name: "Mis Estudiantes", href: "/dashboard/my-students", icon: Users },
+    { name: "Asistencias", href: "/dashboard/attendance", icon: CheckSquare },
+    { name: "Notas", href: "/dashboard/notes", icon: FileText },
+    { name: "Calificaciones", href: "/dashboard/grades", icon: GraduationCap },
+    { name: "Calendario", href: "/dashboard/calendar", icon: Calendar },
+  ],
+
+  auxiliar: [
+    { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
+    { name: "Mis Grupos", href: "/dashboard/my-groups", icon: Building2 },
+    { name: "Asistencias", href: "/dashboard/attendance", icon: CheckSquare },
+    { name: "Calendario", href: "/dashboard/calendar", icon: Calendar },
+  ],
+
+  secretario: [
+    { name: "Panel Principal", href: "/dashboard", icon: BookOpen },
+    { name: "Estudiantes", href: "/dashboard/students", icon: Users },
+    { name: "Familias", href: "/dashboard/families", icon: UsersRound },
+  ],
+}
 
 export function AppSidebar() {
   const pathname = usePathname()
-  const { user, logout } = useAuth()
+  const { user, logout, isLoading } = useAuth()
+
+if (isLoading) return null
+if (!user?.role) return null
+
+const navigation =
+  navigationByRole[user.role as keyof typeof navigationByRole] || []
+
+console.log("User role:", user.role)
+console.log("Navigation items:", navigation)  
 
   return (
     <div className="flex h-screen w-64 flex-col bg-amber-50 border-r border-amber-200">
@@ -74,7 +109,7 @@ export function AppSidebar() {
 
       <div className="border-t border-amber-200 p-4 space-y-2">
         <div className="px-3 py-2">
-          <p className="text-sm font-medium text-amber-900">{user?.name}</p>
+          <p className="text-sm font-medium text-amber-900">{user?.username}</p>
           <p className="text-xs text-amber-700">{user?.email}</p>
         </div>
         <Button variant="ghost" className="w-full justify-start text-amber-900 hover:bg-amber-100" onClick={logout}>
