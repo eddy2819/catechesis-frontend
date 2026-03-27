@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { createStudentAttendance, getAttendanceByDate, listStudents, updateAttendance } from "@/lib/students"
 import type { Attendance, Student } from "@/lib/types"
-import { AlertCircle, ArrowLeft, Check, Clock, Save, X } from "lucide-react"
+import { AlertCircle, ArrowLeft, Check, Clock, RefreshCw, Save, Search, X } from "lucide-react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
@@ -18,6 +18,7 @@ export default function StudentAttendancePage() {
   const [students, setStudents] = useState<Student[]>([])
   const [attendanceRecords, setAttendanceRecords] = useState<Map<string, Attendance>>(new Map())
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
       const fetchStudents = async () => {
@@ -36,6 +37,7 @@ export default function StudentAttendancePage() {
                 date: record.date ? new Date(record.date) : selectedDate,
                 status: record.status,
                 notes: record.notes,
+                absence_justification: record.absence_justification,
               };
               map.set(studentId, normalized);
             });
@@ -54,14 +56,16 @@ export default function StudentAttendancePage() {
 
   const handleStatusChange = async (studentId: string, status: Attendance["status"]) => {
     const existing = attendanceRecords.get(studentId)
+    const dateStr = selectedDate.toISOString().split('T')[0]
+    
     if (existing) {
-      const updated = (await updateAttendance(existing.id, { status })) as Attendance
+      const updated = (await updateAttendance(studentId, dateStr, { status })) as Attendance
       const newMap = new Map(attendanceRecords)
       newMap.set(studentId, updated)
       setAttendanceRecords(newMap)
     } else {
       const payload ={
-        date: selectedDate.toISOString().split('T')[0],
+        date: dateStr,
         status,
         notes: ''
       }
@@ -75,13 +79,58 @@ export default function StudentAttendancePage() {
 
   const handleNotesChange = async (studentId: string, notes: string) => {
     const existing = attendanceRecords.get(studentId)
+    const dateStr = selectedDate.toISOString().split('T')[0]
+    
     if (existing) {
-      const updated = await updateAttendance(existing.id, { notes }) as Attendance | undefined
+      const updated = await updateAttendance(studentId, dateStr, { notes }) as Attendance | undefined
       if (updated) {
         const newMap = new Map(attendanceRecords)
         newMap.set(studentId, updated)
         setAttendanceRecords(newMap)
       }
+    }
+  }
+
+  const handleJustificationChange = async (studentId: string, justification: string) => {
+    const existing = attendanceRecords.get(studentId)
+    const dateStr = selectedDate.toISOString().split('T')[0]
+    
+    if (existing) {
+      const updated = await updateAttendance(studentId, dateStr, { absence_justification: justification }) as Attendance | undefined
+      if (updated) {
+        const newMap = new Map(attendanceRecords)
+        newMap.set(studentId, updated)
+        setAttendanceRecords(newMap)
+      }
+    }
+  }
+
+  const handleToggleAttendance = async (studentId: string) => {
+    const existing = attendanceRecords.get(studentId)
+    const dateStr = selectedDate.toISOString().split('T')[0]
+    
+    try {
+      if (existing) {
+        // Si existe, cambiar de presente a ausente o viceversa
+        const newStatus: Attendance["status"] = existing.status === "presente" ? "ausente" : "presente"
+        const updated = (await updateAttendance(studentId, dateStr, { status: newStatus })) as Attendance
+        const newMap = new Map(attendanceRecords)
+        newMap.set(studentId, updated)
+        setAttendanceRecords(newMap)
+      } else {
+        // Si no existe, crear con estado "presente" por defecto
+        const payload = {
+          date: dateStr,
+          status: "presente" as const,
+          notes: ''
+        }
+        const newRecord = (await createStudentAttendance(studentId, payload)) as Attendance
+        const newMap = new Map(attendanceRecords)
+        newMap.set(studentId, newRecord)
+        setAttendanceRecords(newMap)
+      }
+    } catch (error) {
+      console.error("Error toggling attendance:", error)
     }
   }
 
@@ -130,6 +179,19 @@ export default function StudentAttendancePage() {
     late: Array.from(attendanceRecords.values()).filter((r) => r.status === "tarde").length,
     excused: Array.from(attendanceRecords.values()).filter((r) => r.status === "justificado").length,
   }
+
+  const getFilteredStudents = () => {
+    if (!searchTerm.trim()) {
+      return students
+    }
+    const term = searchTerm.toLowerCase().trim()
+    return students.filter((student) => {
+      const fullName = `${student.first_name} ${student.last_name}`.toLowerCase()
+      return fullName.includes(term)
+    })
+  }
+
+  const filteredStudents = getFilteredStudents()
 
   if (loading) {
     return <div className="text-amber-900">Cargando...</div>
@@ -190,13 +252,43 @@ export default function StudentAttendancePage() {
           <CardDescription>Marca la asistencia de cada estudiante</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
-            {students.map((student) => {
-              const record = attendanceRecords.get(student.id)
-              const status = record?.status
+          <div className="mb-4 flex gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-3 w-4 h-4 text-amber-500" />
+              <input
+                type="text"
+                placeholder="Buscar por nombre..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-amber-900 placeholder-amber-600"
+              />
+            </div>
+            {searchTerm && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setSearchTerm("")}
+                className="text-amber-700 hover:bg-amber-100"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
 
-              return (
-                <div key={student.id} className="border border-amber-200 rounded-lg p-4 space-y-3">
+          {filteredStudents.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-amber-700">
+                {searchTerm ? "No se encontraron estudiantes con ese nombre" : "No hay estudiantes"}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredStudents.map((student) => {
+                const record = attendanceRecords.get(student.id)
+                const status = record?.status
+
+                return (
+                  <div key={student.id} className="border border-amber-200 rounded-lg p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold text-amber-900">
@@ -277,22 +369,50 @@ export default function StudentAttendancePage() {
                     </Button>
                   </div>
 
+                  <div className="flex gap-2 pt-2">
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="bg-purple-100 text-purple-700 border border-purple-300 hover:bg-purple-200"
+                      onClick={() => handleToggleAttendance(student.id)}
+                      title="Cambiar rápidamente entre Presente y Ausente"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      Toggle Rápido
+                    </Button>
+                  </div>
+
                   {record && (
-                    <div>
-                      <label className="text-sm font-medium text-amber-900 mb-1 block">Notas</label>
-                      <input
-                        type="text"
-                        placeholder="Agregar notas opcionales..."
-                        value={record.notes || ""}
-                        onChange={(e) => handleNotesChange(student.id, e.target.value)}
-                        className="w-full px-3 py-2 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      />
+                    <div className="space-y-3">
+                      {status === "ausente" && (
+                        <div className="bg-red-50 border border-red-300 rounded-lg p-3">
+                          <label className="text-sm font-medium text-red-900 mb-1 block">Justificación de la Falta</label>
+                          <textarea
+                            placeholder="Ingrese la justificación de la ausencia (ej: Enfermedad, Problema familiar, Viaje urgente)..."
+                            value={record.absence_justification || ""}
+                            onChange={(e) => handleJustificationChange(student.id, e.target.value)}
+                            className="w-full px-3 py-2 border border-red-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                            rows={2}
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <label className="text-sm font-medium text-amber-900 mb-1 block">Notas</label>
+                        <input
+                          type="text"
+                          placeholder="Agregar notas opcionales..."
+                          value={record.notes || ""}
+                          onChange={(e) => handleNotesChange(student.id, e.target.value)}
+                          className="w-full px-3 py-2 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
               )
             })}
-          </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

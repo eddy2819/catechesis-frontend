@@ -1,6 +1,8 @@
 "use client";
 
 import type {
+  AltarServer,
+  AltarServerAttendance,
   Assignment,
   Attendance,
   CalendarEvent,
@@ -13,6 +15,7 @@ import type {
   Parent,
   ParentAttendance,
   Resource,
+  SacramentRecord,
   Student,
 } from "./types";
 
@@ -143,7 +146,7 @@ class DataStore {
 
   updateCalendarEvent(
     id: string,
-    updates: Partial<CalendarEvent>
+    updates: Partial<CalendarEvent>,
   ): CalendarEvent | null {
     const data = this.getData() || {};
     const events = data.events || [];
@@ -246,7 +249,7 @@ class DataStore {
 
   updateEvaluation(
     id: string,
-    updates: Partial<Evaluation>
+    updates: Partial<Evaluation>,
   ): Evaluation | null {
     const data = this.getData() || {};
     const evaluations = data.evaluations || [];
@@ -296,7 +299,7 @@ class DataStore {
 
   updateCommunication(
     id: string,
-    updates: Partial<Communication>
+    updates: Partial<Communication>,
   ): Communication | null {
     const data = this.getData() || {};
     const communications = data.communications || [];
@@ -384,7 +387,7 @@ class DataStore {
 
   updateAttendance(
     id: string,
-    updates: Partial<Attendance>
+    updates: Partial<Attendance>,
   ): Attendance | null {
     const data = this.getData() || {};
     const attendances = data.attendances || [];
@@ -412,7 +415,7 @@ class DataStore {
     const attendances = this.getAttendances();
     const dateStr = new Date(date).toDateString();
     return attendances.filter(
-      (a) => new Date(a.date).toDateString() === dateStr
+      (a) => new Date(a.date).toDateString() === dateStr,
     );
   }
 
@@ -425,7 +428,7 @@ class DataStore {
 
   getAttendanceByStudentAndDate(
     studentId: string,
-    date: Date
+    date: Date,
   ): Attendance | null {
     const attendances = this.getAttendances();
     const dateStr = new Date(date).toDateString();
@@ -433,7 +436,7 @@ class DataStore {
       attendances.find(
         (a) =>
           a.studentId === studentId &&
-          new Date(a.date).toDateString() === dateStr
+          new Date(a.date).toDateString() === dateStr,
       ) || null
     );
   }
@@ -445,7 +448,7 @@ class DataStore {
   }
 
   addParentAttendance(
-    attendance: Omit<ParentAttendance, "id">
+    attendance: Omit<ParentAttendance, "id">,
   ): ParentAttendance {
     const data = this.getData() || {};
     const newAttendance: ParentAttendance = {
@@ -459,7 +462,7 @@ class DataStore {
 
   updateParentAttendance(
     id: string,
-    updates: Partial<ParentAttendance>
+    updates: Partial<ParentAttendance>,
   ): ParentAttendance | null {
     const data = this.getData() || {};
     const attendances = data.parentAttendances || [];
@@ -487,13 +490,13 @@ class DataStore {
     const attendances = this.getParentAttendances();
     const dateStr = new Date(date).toDateString();
     return attendances.filter(
-      (a) => new Date(a.meetingDate).toDateString() === dateStr
+      (a) => new Date(a.meetingDate).toDateString() === dateStr,
     );
   }
 
   getParentAttendanceByParentAndDate(
     parentId: string,
-    date: Date
+    date: Date,
   ): ParentAttendance | null {
     const attendances = this.getParentAttendances();
     const dateStr = new Date(date).toDateString();
@@ -501,7 +504,7 @@ class DataStore {
       attendances.find(
         (a) =>
           a.parentId === parentId &&
-          new Date(a.meetingDate).toDateString() === dateStr
+          new Date(a.meetingDate).toDateString() === dateStr,
       ) || null
     );
   }
@@ -563,7 +566,7 @@ class DataStore {
   }
 
   addCatechistAttendance(
-    attendance: Omit<CatechistAttendance, "id">
+    attendance: Omit<CatechistAttendance, "id">,
   ): CatechistAttendance {
     const data = this.getData() || {};
     const newAttendance: CatechistAttendance = {
@@ -580,12 +583,12 @@ class DataStore {
 
   updateCatechistAttendance(
     id: string,
-    updates: Partial<CatechistAttendance>
+    updates: Partial<CatechistAttendance>,
   ): CatechistAttendance | null {
     const data = this.getData() || {};
     const attendances = data.catechistAttendances || [];
     const index = attendances.findIndex(
-      (a: CatechistAttendance) => a.id === id
+      (a: CatechistAttendance) => a.id === id,
     );
     if (index === -1) return null;
 
@@ -599,7 +602,7 @@ class DataStore {
     const data = this.getData() || {};
     const attendances = data.catechistAttendances || [];
     const filtered = attendances.filter(
-      (a: CatechistAttendance) => a.id !== id
+      (a: CatechistAttendance) => a.id !== id,
     );
     if (filtered.length === attendances.length) return false;
 
@@ -612,13 +615,13 @@ class DataStore {
     const attendances = this.getCatechistAttendances();
     const dateStr = new Date(date).toDateString();
     return attendances.filter(
-      (a) => new Date(a.eventDate).toDateString() === dateStr
+      (a) => new Date(a.eventDate).toDateString() === dateStr,
     );
   }
 
   getCatechistAttendanceByCatechistAndDate(
     catechistId: string,
-    date: Date
+    date: Date,
   ): CatechistAttendance | null {
     const attendances = this.getCatechistAttendances();
     const dateStr = new Date(date).toDateString();
@@ -626,7 +629,7 @@ class DataStore {
       attendances.find(
         (a) =>
           a.catechistId === catechistId &&
-          new Date(a.eventDate).toDateString() === dateStr
+          new Date(a.eventDate).toDateString() === dateStr,
       ) || null
     );
   }
@@ -650,7 +653,7 @@ class DataStore {
 
   updateAssignment(
     id: string,
-    updates: Partial<Assignment>
+    updates: Partial<Assignment>,
   ): Assignment | null {
     const data = this.getData() || {};
     const assignments = data.assignments || [];
@@ -719,12 +722,12 @@ class DataStore {
 
   getGradeByStudentAndAssignment(
     studentId: string,
-    assignmentId: string
+    assignmentId: string,
   ): Grade | null {
     const grades = this.getGrades();
     return (
       grades.find(
-        (g) => g.studentId === studentId && g.assignmentId === assignmentId
+        (g) => g.studentId === studentId && g.assignmentId === assignmentId,
       ) || null
     );
   }
@@ -737,6 +740,183 @@ class DataStore {
   getGradesByAssignmentId(assignmentId: string): Grade[] {
     const grades = this.getGrades();
     return grades.filter((g) => g.assignmentId === assignmentId);
+  }
+
+  // Altar Server (Monaguillo) methods
+  getAltarServers(): AltarServer[] {
+    const data = this.getData();
+    return data?.altarServers || [];
+  }
+
+  addAltarServer(altarServer: Omit<AltarServer, "id">): AltarServer {
+    const data = this.getData() || {};
+    const newAltarServer: AltarServer = {
+      ...altarServer,
+      id: crypto.randomUUID(),
+    };
+    data.altarServers = [...(data.altarServers || []), newAltarServer];
+    this.saveData(data);
+    return newAltarServer;
+  }
+
+  updateAltarServer(
+    id: string,
+    updates: Partial<AltarServer>,
+  ): AltarServer | null {
+    const data = this.getData() || {};
+    const altarServers = data.altarServers || [];
+    const index = altarServers.findIndex((a: AltarServer) => a.id === id);
+    if (index === -1) return null;
+
+    altarServers[index] = { ...altarServers[index], ...updates };
+    data.altarServers = altarServers;
+    this.saveData(data);
+    return altarServers[index];
+  }
+
+  deleteAltarServer(id: string): boolean {
+    const data = this.getData() || {};
+    const altarServers = data.altarServers || [];
+    const filtered = altarServers.filter((a: AltarServer) => a.id !== id);
+    if (filtered.length === altarServers.length) return false;
+
+    data.altarServers = filtered;
+    this.saveData(data);
+    return true;
+  }
+
+  getAltarServerById(id: string): AltarServer | null {
+    const altarServers = this.getAltarServers();
+    return altarServers.find((a) => a.id === id) || null;
+  }
+
+  // Altar Server Attendance methods
+  getAltarServerAttendances(): AltarServerAttendance[] {
+    const data = this.getData();
+    return data?.altarServerAttendances || [];
+  }
+
+  addAltarServerAttendance(
+    attendance: Omit<AltarServerAttendance, "id">,
+  ): AltarServerAttendance {
+    const data = this.getData() || {};
+    const newAttendance: AltarServerAttendance = {
+      ...attendance,
+      id: crypto.randomUUID(),
+    };
+    data.altarServerAttendances = [
+      ...(data.altarServerAttendances || []),
+      newAttendance,
+    ];
+    this.saveData(data);
+    return newAttendance;
+  }
+
+  updateAltarServerAttendance(
+    id: string,
+    updates: Partial<AltarServerAttendance>,
+  ): AltarServerAttendance | null {
+    const data = this.getData() || {};
+    const attendances = data.altarServerAttendances || [];
+    const index = attendances.findIndex(
+      (a: AltarServerAttendance) => a.id === id,
+    );
+    if (index === -1) return null;
+
+    attendances[index] = { ...attendances[index], ...updates };
+    data.altarServerAttendances = attendances;
+    this.saveData(data);
+    return attendances[index];
+  }
+
+  getAltarServerAttendancesByDate(date: Date): AltarServerAttendance[] {
+    const attendances = this.getAltarServerAttendances();
+    const dateStr = new Date(date).toDateString();
+    return attendances.filter(
+      (a) => new Date(a.date).toDateString() === dateStr,
+    );
+  }
+
+  getAltarServerAttendanceByServerAndDate(
+    altarServerId: string,
+    date: Date,
+  ): AltarServerAttendance | null {
+    const attendances = this.getAltarServerAttendances();
+    const dateStr = new Date(date).toDateString();
+    return (
+      attendances.find(
+        (a) =>
+          a.altarServerId === altarServerId &&
+          new Date(a.date).toDateString() === dateStr,
+      ) || null
+    );
+  }
+
+  // Sacrament Records methods
+  getSacramentRecords(): SacramentRecord[] {
+    const data = this.getData();
+    return data?.sacramentRecords || [];
+  }
+
+  addSacramentRecord(record: Omit<SacramentRecord, "id">): SacramentRecord {
+    const data = this.getData() || {};
+    const newRecord: SacramentRecord = {
+      ...record,
+      id: crypto.randomUUID(),
+    };
+    data.sacramentRecords = [...(data.sacramentRecords || []), newRecord];
+    this.saveData(data);
+    return newRecord;
+  }
+
+  updateSacramentRecord(
+    id: string,
+    updates: Partial<SacramentRecord>,
+  ): SacramentRecord | null {
+    const data = this.getData() || {};
+    const records = data.sacramentRecords || [];
+    const index = records.findIndex((r: SacramentRecord) => r.id === id);
+    if (index === -1) return null;
+
+    records[index] = { ...records[index], ...updates };
+    data.sacramentRecords = records;
+    this.saveData(data);
+    return records[index];
+  }
+
+  deleteSacramentRecord(id: string): boolean {
+    const data = this.getData() || {};
+    const records = data.sacramentRecords || [];
+    const filtered = records.filter((r: SacramentRecord) => r.id !== id);
+    if (filtered.length === records.length) return false;
+
+    data.sacramentRecords = filtered;
+    this.saveData(data);
+    return true;
+  }
+
+  getSacramentRecordById(id: string): SacramentRecord | null {
+    const records = this.getSacramentRecords();
+    return records.find((r) => r.id === id) || null;
+  }
+
+  getSacramentRecordsByType(type: SacramentRecord["type"]): SacramentRecord[] {
+    const records = this.getSacramentRecords();
+    return records.filter((r) => r.type === type);
+  }
+
+  getUniqueNeighborhoods(): string[] {
+    const students = this.getStudents();
+    const neighborhoods = students
+      .map((s) => s.neighborhood)
+      .filter((n): n is string => !!n);
+    return Array.from(new Set(neighborhoods)).sort();
+  }
+
+  getUniqueLevels(): string[] {
+    const students = this.getStudents();
+    const levels = students.map((s) => s.grade).filter((l) => !!l);
+    return Array.from(new Set(levels)).sort();
   }
 }
 

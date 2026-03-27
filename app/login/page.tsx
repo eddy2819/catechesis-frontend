@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/lib/auth-context"
-import { BookOpen } from "lucide-react"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 
@@ -48,8 +48,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 bg-amber-600 rounded-full flex items-center justify-center">
-            <BookOpen className="w-8 h-8 text-white" />
+          <div className="mx-auto w-20 h-20 rounded-full flex items-center justify-center">
+            <Image
+                        src="/logo-cate.jpg"
+                        alt="Logo"
+                        width={80}
+                        height={80}
+                        className="object-contain"
+                      />
           </div>
           <div>
             <CardTitle className="text-2xl font-bold text-amber-900">San Francisco Digital</CardTitle>

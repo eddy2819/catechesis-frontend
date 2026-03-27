@@ -28,6 +28,7 @@ export interface Attendance {
   date: string;
   status: "presente" | "ausente" | "justificado" | "tarde";
   notes?: string | null;
+  absence_justification?: string | null;
 }
 
 export function createStudent(student: StudentPayload) {
@@ -71,13 +72,26 @@ export function updateStudent(student_id: string, data: StudentPayload) {
 }
 
 export function updateAttendance(
-  attendance_id: string,
+  student_id: string,
+  attendance_date: string,
   data: Partial<Attendance>,
 ) {
-  return apiFetch(`/attendance/${attendance_id}`, {
+  return apiFetch(`/students/${student_id}/attendance/${attendance_date}`, {
     method: "PUT",
     body: JSON.stringify(data),
   });
+}
+
+export function toggleStudentAttendance(
+  student_id: string,
+  attendance_date: string,
+) {
+  return apiFetch(
+    `/students/${student_id}/attendance/${attendance_date}/toggle`,
+    {
+      method: "PUT",
+    },
+  );
 }
 
 export function deleteStudent(id: string) {

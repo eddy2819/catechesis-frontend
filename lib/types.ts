@@ -46,6 +46,7 @@ export interface Attendance {
   date: Date;
   status: "presente" | "ausente" | "tarde" | "justificado";
   notes?: string;
+  absence_justification?: string;
 }
 
 export interface ParentAttendance {
@@ -154,4 +155,74 @@ export interface Grade {
   score: number;
   notes?: string;
   submittedAt?: Date;
+}
+
+export interface AltarServer {
+  id: string;
+  firstName: string;
+  lastName: string;
+  documentId?: string;
+  dateOfBirth: Date;
+  phone?: string;
+  neighborhood?: string;
+  parentName?: string;
+  parentPhone?: string;
+  role: "monaguillo" | "turiferario" | "crucifero" | "ceroferario" | "acólito";
+  experience: "principiante" | "intermedio" | "avanzado";
+  availableDays: string[];
+  joinedDate: Date;
+  status: "active" | "inactive";
+  notes?: string;
+}
+
+export interface AltarServerAttendance {
+  id: string;
+  altarServerId: string;
+  date: Date;
+  eventType:
+    | "misa_dominical"
+    | "misa_diaria"
+    | "celebracion"
+    | "procesion"
+    | "ensayo"
+    | "otro";
+  status: "present" | "absent" | "late" | "excused";
+  notes?: string;
+}
+
+export interface SacramentRecord {
+  id: string;
+  type:
+    | "bautismo"
+    | "primera_comunion"
+    | "confirmacion"
+    | "matrimonio"
+    | "confesion";
+  personName: string;
+  personLastName: string;
+  documentId?: string;
+  dateOfBirth?: Date;
+  fatherName?: string;
+  motherName?: string;
+  godparentName?: string;
+  godparentLastName?: string;
+  spouseName?: string;
+  spouseLastName?: string;
+  celebrantName: string;
+  parishName: string;
+  bookNumber?: string;
+  pageNumber?: string;
+  entryNumber?: string;
+  sacramentDate: Date;
+  registrationDate: Date;
+  notes?: string;
+}
+
+export interface GeneralMeetingAttendance {
+  id: string;
+  studentId: string;
+  meetingDate: Date;
+  status: "present" | "absent" | "late" | "excused";
+  notes?: string;
+  meetingType: "general" | "priest" | "sacrament" | "special";
 }
