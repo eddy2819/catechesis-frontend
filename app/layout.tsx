@@ -8,7 +8,7 @@ import { Suspense } from "react"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Mi Cuaderno de Catequesis",
+  title: "Sistema Digital Catequesis",
   description: "Sistema de gestión para catequistas",
   generator: "v0.app",
 }
