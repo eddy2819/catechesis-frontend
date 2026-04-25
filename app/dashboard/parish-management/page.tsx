@@ -46,6 +46,8 @@ import {
   Calendar,
   Check,
   Church,
+  Clock,
+  FileCheck,
   Filter,
   Users,
   X,
@@ -177,7 +179,7 @@ export default function ParishManagementPage() {
 
     if (existing) {
       // 👉 Ya existe asistencia para ESTE día
-      const updated = await updateAttendance(existing.id, { status });
+      const updated = await updateAttendance(studentId, existing.date, { status });
       const newMap = new Map(attendanceRecords);
       newMap.set(studentId, updated as Attendance);
       setAttendanceRecords(newMap);
@@ -193,7 +195,6 @@ export default function ParishManagementPage() {
         notes: "",
       };
 
-      
       console.log("Enviando a guardar con este payload:", payload);
       const created = await createStudentAttendance(studentId, payload);
       console.log("¡El backend lo guardó y me devolvió esto!:", created);
@@ -639,6 +640,62 @@ export default function ParishManagementPage() {
                                   className="bg-red-700 text-white"
                                 >
                                   <p>Ausente</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      markQuickAttendance(student.id, "tarde")
+                                    }
+                                    className={`h-7 w-7 transition-all ${
+                                      attendanceStatus(student) === "tarde"
+                                        ? "bg-yellow-500 text-white hover:bg-yellow-600"
+                                        : "text-yellow-500 hover:text-yellow-600 hover:bg-yellow-100"
+                                    }`}
+                                  >
+                                    <Clock className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="top"
+                                  className="bg-yellow-600 text-white"
+                                >
+                                  <p>Tarde</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() =>
+                                      markQuickAttendance(
+                                        student.id,
+                                        "justificado",
+                                      )
+                                    }
+                                    className={`h-7 w-7 transition-all ${
+                                      attendanceStatus(student) ===
+                                      "justificado"
+                                        ? "bg-blue-500 text-white hover:bg-blue-600"
+                                        : "text-blue-500 hover:text-blue-600 hover:bg-blue-100"
+                                    }`}
+                                  >
+                                    <FileCheck className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  side="top"
+                                  className="bg-blue-600 text-white"
+                                >
+                                  <p>Justificado</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>

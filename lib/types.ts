@@ -43,7 +43,7 @@ export interface Parent {
 
 export interface Attendance {
   id: string;
-  date: Date;
+  date: string;
   status: "presente" | "ausente" | "tarde" | "justificado";
   notes?: string;
   absence_justification?: string;
