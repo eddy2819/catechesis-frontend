@@ -8,13 +8,14 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { exportStudentsToPDF } from "@/lib/pdf-export"
 import { listStudents } from "@/lib/students"
 import type { Student } from "@/lib/types"
-import { FileDown, Plus, Search, UserCircle } from "lucide-react"
+import { FileDown, Plus, Search, UserCircle, X } from "lucide-react"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect,useMemo, useState } from "react"
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([])
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedGrade, setSelectedGrade] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchStudents = async() =>{
@@ -28,12 +29,23 @@ export default function StudentsPage() {
     fetchStudents()
   }, [])
 
-  const filteredStudents = students.filter(
-    (student) =>
-      student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      student.status.toLowerCase().includes(searchQuery.toLowerCase()),
-  )
+  const availableGrades = useMemo(() => {
+    const grades = students.map((s) => s.grade).filter(Boolean)
+    return Array.from(new Set(grades)).sort()
+  }, [students])
+
+  const filteredStudents = useMemo(() => {
+    return students.filter((student) => {
+      const matchesSearch =
+        student.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        student.status.toLowerCase().includes(searchQuery.toLowerCase())
+
+      const matchesGrade = selectedGrade ? student.grade === selectedGrade : true
+
+      return matchesSearch && matchesGrade
+    })
+  }, [students, searchQuery, selectedGrade])
 
   const calculateAge = (dateOfBirth: Date) => {
     const today = new Date()
@@ -46,6 +58,13 @@ export default function StudentsPage() {
     return age
   }
 
+   const handleClearFilters = () => {
+    setSearchQuery("")
+    setSelectedGrade(null)
+  }
+
+  const hasActiveFilters = searchQuery !== "" || selectedGrade !== null
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
@@ -56,12 +75,15 @@ export default function StudentsPage() {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            onClick={() => exportStudentsToPDF(filteredStudents)}
+            onClick={() => exportStudentsToPDF(filteredStudents,selectedGrade)}
             className="border-amber-600 text-amber-600 hover:bg-amber-50"
             disabled={filteredStudents.length === 0}
           >
             <FileDown className="mr-2 h-4 w-4" />
             Exportar PDF
+             {selectedGrade && (
+              <span className="ml-1 text-xs font-normal opacity-75">({selectedGrade})</span>
+            )}
           </Button>
           <Link href="/dashboard/students/new">
             <Button className="bg-amber-600 hover:bg-amber-700 text-white">
@@ -73,16 +95,64 @@ export default function StudentsPage() {
       </div>
 
       <Card className="border-amber-200 mb-6">
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
+          {/* Búsqueda por nombre */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-500" />
             <Input
-              placeholder="Buscar por nombre o sacramento"
+              placeholder="Buscar por nombre o estado"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 border-amber-200 focus:border-amber-600"
             />
           </div>
+
+          {/* Filtro por nivel */}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-sm font-medium text-amber-800">Filtrar por nivel:</span>
+
+            <button
+              onClick={() => setSelectedGrade(null)}
+              className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+                selectedGrade === null
+                  ? "bg-amber-600 text-white border-amber-600"
+                  : "bg-white text-amber-700 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+              }`}
+            >
+              Todos
+            </button>
+
+            {availableGrades.map((grade) => (
+              <button
+                key={grade}
+                onClick={() => setSelectedGrade(grade === selectedGrade ? null : grade)}
+                className={`px-3 py-1 rounded-full text-sm font-medium border transition-colors ${
+                  selectedGrade === grade
+                    ? "bg-amber-600 text-white border-amber-600"
+                    : "bg-white text-amber-700 border-amber-300 hover:border-amber-500 hover:bg-amber-50"
+                }`}
+              >
+                {grade}
+              </button>
+            ))}
+
+            {/* Botón limpiar filtros */}
+            {hasActiveFilters && (
+              <button
+                onClick={handleClearFilters}
+                className="ml-auto flex items-center gap-1 text-sm text-amber-600 hover:text-amber-800 underline underline-offset-2"
+              >
+                <X className="h-3 w-3" />
+                Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          {/* Contador de resultados */}
+          <p className="text-xs text-amber-600">
+            {filteredStudents.length} estudiante{filteredStudents.length !== 1 ? "s" : ""} encontrado{filteredStudents.length !== 1 ? "s" : ""}
+            {selectedGrade && ` en nivel "${selectedGrade}"`}
+          </p>
         </CardContent>
       </Card>
 

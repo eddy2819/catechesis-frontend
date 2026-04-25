@@ -4,14 +4,33 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { Catechist, Student } from "./types";
 
-export function exportStudentsToPDF(students: Student[]) {
+export function exportStudentsToPDF(students: Student[], gradeFilter?: string | null) {
   const doc = new jsPDF();
+
+  // Ordenar por barrio (address) A-Z
+
+  const sortedStudents = [...students].sort((a, b) => {
+    const addressA = (a.address || "").toLowerCase();
+    const addressB = (b.address || "").toLowerCase();
+    return addressA.localeCompare(addressB, "es");
+  });
+
+  const title = gradeFilter
+    ? `Lista de Estudiantes - ${gradeFilter}`
+    : "Lista General de Estudiantes";
+
+
+  const fileName = gradeFilter 
+    ? `lista-estudiantes-${gradeFilter.toLowerCase().replace(/\s+/g, "-")}.pdf`
+    : "lista-general-estudiantes.pdf";
+
+
 
   // Title
   doc.setFontSize(18);
   doc.setTextColor(146, 64, 14);
-  doc.text("Lista de Estudiantes de Segundo de Confirmación", 14, 22);
-  doc.text("Barrio Naranjito", 14, 28);
+  doc.text(title, 14, 22);
+  doc.text("Parroquia San Francisco de Taquil", 14, 28);
 
   // Subtitle with date
   doc.setFontSize(10);
@@ -26,8 +45,9 @@ export function exportStudentsToPDF(students: Student[]) {
     45,
   );
 
+
   // Table
-  const tableData = students.map((student, index) => [
+  const tableData = sortedStudents.map((student, index) => [
     index + 1,
     student.first_name + " " + student.last_name,
     student.address || "No especificado",
@@ -73,7 +93,7 @@ export function exportStudentsToPDF(students: Student[]) {
     );
   }
 
-  doc.save("lista-estudiantes.pdf");
+  doc.save(fileName);
 }
 
 export function exportCatechistsToPDF(catechists: Catechist[]) {
